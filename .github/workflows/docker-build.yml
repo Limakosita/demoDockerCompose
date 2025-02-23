@@ -1,0 +1,32 @@
+name: Docker Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout kod źródłowy
+        uses: actions/checkout@v3
+
+      - name: Logowanie do Docker Hub
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+      - name: Budowanie obrazu Dockerowego
+        run: docker build -t demo-docker-compose .
+
+      - name: Uruchomienie kontenera testowego
+        run: docker run -d -p 8080:8080 --name demo-app demo-docker-compose
+
+      - name: Sprawdzenie działania kontenera
+        run: docker ps | grep demo-app

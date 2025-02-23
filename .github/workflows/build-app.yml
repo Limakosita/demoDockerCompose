@@ -1,0 +1,29 @@
+name: Build Application
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout kod źródłowy
+        uses: actions/checkout@v3
+
+      - name: Instalacja Javy
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Budowanie aplikacji Maven
+        run: mvn clean package
+
+      - name: Sprawdzenie czy plik JAR istnieje
+        run: ls -la target/
